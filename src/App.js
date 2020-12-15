@@ -1,31 +1,8 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useState } from 'react';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import List from './List';
 
-const initial = [
-  {
-    id: '1',
-    content: 'Lorem ipsum',
-  },
-  {
-    id: '2',
-    content: 'Lorem ipsum',
-  },
-  {
-    id: '3',
-    content: 'Lorem ipsum',
-  },
-  {
-    id: '4',
-    content: 'Lorem ipsum',
-  },
-  {
-    id: '5',
-    content: 'Lorem ipsum',
-  },
-];
-
-const reorder = (list, startIndex, endIndex) => {
+const reorderItems = (list, startIndex, endIndex) => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
@@ -33,40 +10,33 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
-const QuoteItem = styled.div`
-  width: 200px;
-  border: 1px solid grey;
-  margin-bottom: 8px;
-  background-color: lightblue;
-  padding: 8px;
-`;
+const App = () => {
+  const [state, setState] = useState({
+    items: [
+      {
+        id: '1',
+        content: 'Lorem ipsum 1',
+      },
+      {
+        id: '2',
+        content: 'Lorem ipsum 2',
+      },
+      {
+        id: '3',
+        content: 'Lorem ipsum 3',
+      },
+      {
+        id: '4',
+        content: 'Lorem ipsum 4',
+      },
+      {
+        id: '5',
+        content: 'Lorem ipsum 5',
+      },
+    ],
+  });
 
-function Quote({ quote, index }) {
-  return (
-    <Draggable draggableId={quote.id} index={index}>
-      {(provided) => (
-        <QuoteItem
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
-          {quote.content}
-        </QuoteItem>
-      )}
-    </Draggable>
-  );
-}
-
-const QuoteList = React.memo(function QuoteList({ quotes }) {
-  return quotes.map((quote, index) => (
-    <Quote quote={quote} index={index} key={quote.id} />
-  ));
-});
-
-function App() {
-  const [state, setState] = useState({ quotes: initial });
-
-  function onDragEnd(result) {
+  const handleDragEnd = (result) => {
     if (!result.destination) {
       return;
     }
@@ -75,27 +45,29 @@ function App() {
       return;
     }
 
-    const quotes = reorder(
-      state.quotes,
+    const items = reorderItems(
+      state.items,
       result.source.index,
       result.destination.index
     );
 
-    setState({ quotes });
-  }
+    setState({ items });
+  };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId='list'>
-        {(provided) => (
-          <div ref={provided.innerRef} {...provided.droppableProps}>
-            <QuoteList quotes={state.quotes} />
-            {provided.placeholder}
-          </div>
-        )}
+        {(provided) => {
+          return (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              <List items={state.items} />
+              {provided.placeholder}
+            </div>
+          );
+        }}
       </Droppable>
     </DragDropContext>
   );
-}
+};
 
 export default App;
