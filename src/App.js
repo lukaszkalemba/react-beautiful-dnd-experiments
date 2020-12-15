@@ -1,5 +1,5 @@
 import './App.css';
-import { DragDropContext } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 const items = [
   { id: 1, content: 'Lorem ipsum' },
@@ -16,21 +16,27 @@ function App() {
   return (
     <div className='App'>
       <DragDropContext onDragEnd={() => {}}>
-        <div>
-          {items.map((item) => (
-            <div
-              style={{
-                padding: '10px 20px',
-                margin: '5px auto',
-                border: '1px solid black',
-                maxWidth: '400px',
-              }}
-              key={item.id}
-            >
-              {item.content}
+        <Droppable droppableId='list'>
+          {(provided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              <div>
+                {items.map((item) => (
+                  <div
+                    style={{
+                      padding: '10px 20px',
+                      margin: '5px auto',
+                      border: '1px solid black',
+                      maxWidth: '400px',
+                    }}
+                    key={item.id}
+                  >
+                    {item.content}
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
+          )}
+        </Droppable>
       </DragDropContext>
     </div>
   );
